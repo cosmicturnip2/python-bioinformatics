@@ -1,10 +1,8 @@
 """
-A module for validating, counting, and processing genomic sequences.
+A module for analysis of DNA and RNA sequences.
 """
 
 # 1. Module-level Constants & Translation Tables
-_IUPAC_DNA_BASES = set("ACGTNRYSWKMBDHV-")
-_IUPAC_RNA_BASES = set("ACGUNRYSWKMBDHV-")
 _DNA_COMPLEMENT = str.maketrans("ACGTRYSWKMBDHVN-", "TGCAYRWSMKVHDBN-")
 _RNA_COMPLEMENT = str.maketrans("ACGURYSWKMBDHVN-", "UGCAYRWSMKVHDBN-")
 _CANONICAL_DNA_BASES = ("A", "C", "G", "T")
@@ -16,56 +14,7 @@ _IUPAC_GC_WEIGHTS = {
     "N": 0.25,
 }
 
-# 2. Validation Functions
-def validate_dna_sequence(raw_dna_sequence: str)-> str | None:
-    """
-    Validate and normalise a raw DNA sequence including IUPAC codes.
-
-    Args:
-        dna_sequence (str): The original, raw DNA sequence as a string.
-    Returns:
-        validated_sequence (str | None): Validated DNA sequence or None.
-    """
-
-    if not raw_dna_sequence:
-        return None
-
-    if not isinstance(raw_dna_sequence, str):
-        return None
-
-    validated_sequence = raw_dna_sequence.strip().upper()
-
-    if not set(validated_sequence).issubset(_IUPAC_DNA_BASES):
-        return None
-
-    return validated_sequence
-
-
-def validate_rna_sequence(raw_rna_sequence: str)-> str | None:
-    """
-    Validate and normalise a raw RNA sequence including IUPAC codes.
-
-    Args:
-        rna_sequence (str): The original, raw RNA sequence as a string.
-    Returns:
-        validated_sequence (str | None): Validated RNA sequence or None.
-    """
-
-    if not raw_rna_sequence:
-        return None
-
-    if not isinstance(raw_rna_sequence, str):
-        return None
-
-    validated_sequence = raw_rna_sequence.strip().upper()
-
-    if not set(validated_sequence).issubset(_IUPAC_RNA_BASES):
-        return None
-
-    return validated_sequence
-
-
-# 3. Other Functions
+# 2. Transforming Functions
 def transcribe_dna(valid_dna_sequence: str)-> str:
     """
     Transcribe a pre-validated DNA sequence by replacing T with U.
@@ -105,7 +54,7 @@ def reverse_complement_rna(valid_rna_sequence: str)-> str:
     return valid_rna_sequence.translate(_RNA_COMPLEMENT)[::-1]
 
 
-# 4. Count Functions
+# 3. Quantifying Functions
 def count_bases(valid_dna_sequence: str)-> dict[str, int]:
     """
     Count canonical and IUPAC bases of a pre-validated DNA sequence.
