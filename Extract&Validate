@@ -1,0 +1,48 @@
+fasta_text = """>Rosalind_6404
+CCTGCGGAAGATCGGCACTAGAATAGCCAGAACCGTTTCTCTGAGGCTTCCGGCCTTCCC
+TCCCACTAATAATTCTGAGG
+>Rosalind_5959
+CCATCGGTAGCGCATCCTTAGTCCAATTAAGTCCCTATCCAGGCGCTCCGCCGAAGGTCT
+ATATCCATTTGTCAGCAGACACGC
+>Rosalind_0808
+CCACCCTCGTGGTATGGCTAGGCATTCAGGAACCGGAGAACGCTTCAGACCAGCCCGGAC
+TGGGAACCTGCGGGCAGTAGGTGGAAT
+"""
+
+# Include all this under a def extract function.
+def extract_id_and_dna_from_fasta(fasta_text: str)-> dict[str, str]:
+    """
+    Extract each ID and DNA sequence in this order from a FASTA file.
+    
+    Args:
+        fasta_text(str): The raw FASTA file.
+    Returns:
+        records(dict[str, str]): All extracted IDs with their sequence.
+    """
+    
+    records = {}
+
+    # Split FASTA into items of ID and its sequence parts.
+    raw_blocks = fasta_text.strip().split(">")
+
+    # For each split item, get the ID and its get joined sequence.
+    for block in raw_blocks:
+        if not block:
+            continue
+
+        lines = block.strip().splitlines()
+        header_id = lines[0].strip()
+        sequence = "".join(line.strip() for line in lines[1:])
+
+        records[header_id] = sequence
+
+# Validate extracted DNA sequence.
+for sequence in records:
+    validate_dna_sequence(raw_dna_sequence)
+    validated_records = 
+
+
+# GC content measure of pre-validated sequence.
+for sequence in validated_records:
+    calculate_gc_percentage(valid_dna_sequence)
+    gc contents
