@@ -6,50 +6,43 @@ A module for validating DNA and RNA sequences.
 _IUPAC_DNA_BASES = set("ACGTNRYSWKMBDHV-")
 _IUPAC_RNA_BASES = set("ACGUNRYSWKMBDHV-")
 
+
 # 2. Validation Functions
-def validate_dna_sequence(raw_dna_sequence: str)-> str | None:
+def validate_dna_sequence(raw_dna_sequence: str) -> str | None:
     """
     Validate and normalise a raw DNA sequence including IUPAC codes.
 
     Args:
-        dna_sequence (str): The original, raw DNA sequence as a string.
+        raw_dna_sequence (str): The original, raw DNA sequence as a string.
+
     Returns:
         validated_sequence (str | None): Validated DNA sequence or None.
     """
-
     if not raw_dna_sequence:
         return None
-
     if not isinstance(raw_dna_sequence, str):
         return None
-
     validated_sequence = raw_dna_sequence.strip().upper()
-
     if not set(validated_sequence).issubset(_IUPAC_DNA_BASES):
         return None
-
     return validated_sequence
 
 
-def validate_rna_sequence(raw_rna_sequence: str)-> str | None:
+def validate_rna_sequence(raw_rna_sequence: str) -> str | None:
     """
     Validate and normalise a raw RNA sequence including IUPAC codes.
 
     Args:
-        rna_sequence (str): The original, raw RNA sequence as a string.
+        raw_rna_sequence (str): The original, raw RNA sequence as a string.
+
     Returns:
         validated_sequence (str | None): Validated RNA sequence or None.
     """
-
     if not raw_rna_sequence:
         return None
-
     if not isinstance(raw_rna_sequence, str):
         return None
-
     validated_sequence = raw_rna_sequence.strip().upper()
-
     if not set(validated_sequence).issubset(_IUPAC_RNA_BASES):
         return None
-
     return validated_sequence

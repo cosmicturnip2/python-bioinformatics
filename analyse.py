@@ -14,114 +14,122 @@ _IUPAC_GC_WEIGHTS = {
     "N": 0.25,
 }
 
+
 # 2. Transforming Functions
-def transcribe_dna(valid_dna_sequence: str)-> str:
+def transcribe_dna(valid_dna_sequence: str) -> str:
     """
     Transcribe a pre-validated DNA sequence by replacing T with U.
 
     Args:
         valid_dna_sequence (str): Pre-validated, normalised DNA sequence.
+
     Returns:
         str: Transcribed RNA sequence.
     """
-
     return valid_dna_sequence.replace("T", "U")
 
 
-def reverse_complement_dna(valid_dna_sequence: str)-> str:
+def reverse_complement_dna(valid_dna_sequence: str) -> str:
     """
     Complement and reverse a pre-validated DNA sequence including IUPAC.
-    
+
     Args:
-        valid_dna_sequence(str): Pre-validated, normalised DNA sequence.
+        valid_dna_sequence (str): Pre-validated, normalised DNA sequence.
+
     Returns:
         str: Reverse complemented DNA sequence.
     """
-
     return valid_dna_sequence.translate(_DNA_COMPLEMENT)[::-1]
 
 
-def reverse_complement_rna(valid_rna_sequence: str)-> str:
+def reverse_complement_rna(valid_rna_sequence: str) -> str:
     """
     Complement and reverse a pre-validated RNA sequence including IUPAC.
-    
+
     Args:
-        valid_rna_sequence(str): Pre-validated, normalised RNA sequence.
+        valid_rna_sequence (str): Pre-validated, normalised RNA sequence.
+
     Returns:
         str: Reverse complemented RNA sequence.
     """
-
     return valid_rna_sequence.translate(_RNA_COMPLEMENT)[::-1]
 
 
 # 3. Quantifying Functions
-def count_bases(valid_dna_sequence: str)-> dict[str, int]:
+def count_bases(valid_dna_sequence: str) -> dict[str, int]:
     """
     Count canonical and IUPAC bases of a pre-validated DNA sequence.
+
     Function considers all IUPAC bases and "-" as "Other".
 
     Args:
         valid_dna_sequence (str): Pre-validated, normalised DNA sequence.
+
     Returns:
         counts (dict[str, int]): All single base counts.
     """
-
     counts = {base: valid_dna_sequence.count(base)
               for base in _CANONICAL_DNA_BASES}
-
     canonical_total = sum(counts.values())
     counts["Other"] = len(valid_dna_sequence) - canonical_total
-
     return counts
+
+
+def _weighted_gc_sum(valid_dna_sequence: str) -> tuple[float, int]:
+    """
+    Compute the IUPAC-weighted GC sum and degapped length of a sequence.
+
+    Shared by calculate_gc_content and calculate_gc_percentage so the
+    weighting logic lives in exactly one place.
+
+    Args:
+        valid_dna_sequence (str): Pre-validated, normalised DNA sequence.
+
+    Returns:
+        tuple[float, int]: The weighted GC sum, and the degapped sequence
+            length (0 if the sequence was empty after removing gaps).
+    """
+    degapped_sequence = valid_dna_sequence.replace("-", "")
+    if not degapped_sequence:
+        return 0.0, 0
+    gc_sum = sum(
+        degapped_sequence.count(base) * weight
+        for base, weight in _IUPAC_GC_WEIGHTS.items()
+    )
+    return gc_sum, len(degapped_sequence)
 
 
 def calculate_gc_content(valid_dna_sequence: str) -> float:
     """
     Calculate the GC ratio of a pre-validated DNA sequence.
+
     Function uses IUPAC ambiguity weights and excludes alignment gaps.
 
     Args:
-        valid_dna_sequence(str): Pre-validated, normalised DNA sequence.
+        valid_dna_sequence (str): Pre-validated, normalised DNA sequence.
+
     Returns:
         float: GC ratio between 0.0 and 1.0.
     """
-
-    degapped_sequence = valid_dna_sequence.replace("-", "")
-    if not degapped_sequence:
+    gc_sum, length = _weighted_gc_sum(valid_dna_sequence)
+    if length == 0:
         return 0.0
-
-    gc_sum = sum(
-        degapped_sequence.count(base) * weight
-        for base, weight in _IUPAC_GC_WEIGHTS.items()
-        )
-
-    gc_content = gc_sum / len(degapped_sequence)
-
-    return round(gc_content, 4)
+    return round(gc_sum / length, 4)
 
 
 def calculate_gc_percentage(valid_dna_sequence: str) -> float:
     """
-    Calculate the GC percentage of a pre-validated DNA sequence. 
+    Calculate the GC percentage of a pre-validated DNA sequence.
+
     Function uses IUPAC ambiguity weights and excludes alignment gaps.
 
     Args:
-        valid_dna_sequence(str): Pre-validated, normalised DNA sequence.
+        valid_dna_sequence (str): Pre-validated, normalised DNA sequence.
+
     Returns:
         float: GC percentage between 0% and 100%.
     """
-
-    degapped_sequence = valid_dna_sequence.replace("-", "")
-    if not degapped_sequence:
+    gc_sum, length = _weighted_gc_sum(valid_dna_sequence)
+    if length == 0:
         return 0.0
-
-    gc_sum = sum(
-        degapped_sequence.count(base) * weight
-        for base, weight in _IUPAC_GC_WEIGHTS.items()
-        )
-
-    gc_percentage = (gc_sum * 100.0) / len(degapped_sequence)
-
-    return round(gc_percentage, 2)
-
- 
+    return round((gc_sum * 100.0) / length, 2)
